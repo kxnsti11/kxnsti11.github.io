@@ -1,9 +1,111 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Meine Website</title>
-  </head>
-  <body>
-    <h1>Hallo Welt 👋</h1>
-  </body>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mein Portfolio</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    header {
+      text-align: center;
+      padding: 60px 20px;
+      background: #1e293b;
+    }
+    h1 { margin: 0; font-size: 2.5rem; }
+    p { opacity: 0.8; }
+
+    section {
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .projects {
+      display: grid;
+      gap: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      background: #334155;
+    }
+
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Dein Name</h1>
+  <p>Web Developer | Student | Creator</p>
+</header>
+
+<section>
+  <h2>Über mich</h2>
+  <p>
+    Hi! Ich bin [Dein Name]. Ich interessiere mich für Webentwicklung,
+    Programmierung und coole Projekte.
+  </p>
+</section>
+
+<section>
+  <h2>Projekte</h2>
+  <div class="projects">
+
+    <div class="card">
+      <h3>Projekt 1</h3>
+      <p>Kurzbeschreibung deines Projekts.</p>
+      <a href="#">GitHub ansehen</a>
+    </div>
+
+    <div class="card">
+      <h3>Projekt 2</h3>
+      <p>Kurzbeschreibung deines Projekts.</p>
+      <a href="#">GitHub ansehen</a>
+    </div>
+
+    <div class="card">
+      <h3>Projekt 3</h3>
+      <p>Kurzbeschreibung deines Projekts.</p>
+      <a href="#">GitHub ansehen</a>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2>Kontakt</h2>
+  <p>Email: deine@email.com</p>
+  <p>
+    <a href="#">GitHub</a> |
+    <a href="#">LinkedIn</a>
+  </p>
+</section>
+
+<footer>
+  <p>© 2026 Dein Name</p>
+</footer>
+
+</body>
 </html>
