@@ -1,99 +1,160 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sleep Awareness</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Website</title>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
+    * {
       margin: 0;
-      background: #9BA7AD;
-      color: #9BA7AD;
-    }
-    header {
-      text-align: center;
-      padding: 60px 20px;
-      background: #1e293b;
-    }
-    h1 { margin: 0; font-size: 2.5rem; }
-    p { opacity: 0.8; }
-
-    section {
-      padding: 40px 20px;
-      max-width: 900px;
-      margin: auto;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
     }
 
-    .projects {
-      display: grid;
-      gap: 20px;
+    body {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      line-height: 1.6;
     }
 
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 12px;
-      transition: 0.2s;
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px 40px;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      background: #334155;
-    }
-
-    a {
-      color: #38bdf8;
+    .navbar a {
+      color: #fff;
+      margin-left: 20px;
       text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .navbar a:hover {
+      opacity: 0.7;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 120px 20px;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+
+    .hero button {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 30px;
+      background: #fff;
+      color: #333;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .hero button:hover {
+      transform: scale(1.05);
+    }
+
+    .section {
+      background: #fff;
+      color: #333;
+      padding: 70px 20px;
+      text-align: center;
+    }
+
+    .section h2 {
+      margin-bottom: 15px;
     }
 
     footer {
       text-align: center;
       padding: 20px;
-      opacity: 0.6;
+      background: rgba(0,0,0,0.3);
+    }
+
+    /* subtle fade-in animation */
+    .fade {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: 0.8s ease;
+    }
+
+    .fade.show {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
+
 <body>
 
-<header>
-  <h1>Konstantin Noll</h1>
-  <p>Student | Creator</p>
-</header>
+  <header class="navbar">
+    <div class="logo">MySite</div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
 
-<section>
-  <h2>Über mich</h2>
-  <p>
-    Hi! My name is Konsti, and my goal with this website is to raise awareness of the importance and efficiency of sleep.
-  </p>
-</section>
+  <main class="hero">
+    <h1>Welcome to My Website</h1>
+    <p>Simple. Clean. Ready to build on.</p>
+    <button onclick="redirectUser()">Get Started</button>
+  </main>
 
-<section>
-  <h2>Projekte</h2>
-  <div class="projects">
+  <section id="about" class="section fade">
+    <h2>About</h2>
+    <p>This homepage is designed with modern colors and smooth layout to get you started fast.</p>
+  </section>
 
-    <div class="card">
-      <h3>Sleep Awareness</h3>
-      <p>Kurzbeschreibung deines Projekts.</p>
-      <a href="#">GitHub ansehen</a>
-    </div>
+  <section id="contact" class="section fade">
+    <h2>Contact</h2>
+    <p>Email: your@email.com</p>
+  </section>
 
-    
-  </div>
-</section>
+  <footer>
+    <p>© 2026 MySite</p>
+  </footer>
 
-<section>
-  <h2>Kontakt</h2>
-  <p>Email: deine@email.com</p>
-  <p>
-    <a href="#">GitHub</a> |
-    
-  </p>
-</section>
+  <script>
+    function redirectUser() {
+      // 🔧 Replace this later with your actual redirect
+      window.location.href = "https://example.com";
+    }
 
-<footer>
-  <p>© 2026 Konstantin Noll</p>
-</footer>
+    // simple scroll animation
+    const faders = document.querySelectorAll(".fade");
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+        }
+      });
+    });
+
+    faders.forEach(el => observer.observe(el));
+  </script>
 
 </body>
 </html>
+
