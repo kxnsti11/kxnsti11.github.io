@@ -31,16 +31,10 @@
       color: #fff;
       margin-left: 20px;
       text-decoration: none;
-      transition: 0.3s;
-    }
-
-    .navbar a:hover {
-      opacity: 0.7;
     }
 
     .logo {
       font-weight: bold;
-      font-size: 1.3rem;
     }
 
     .hero {
@@ -53,24 +47,13 @@
       margin-bottom: 20px;
     }
 
-    .hero p {
-      margin-bottom: 30px;
-      opacity: 0.9;
-    }
-
     .hero button {
       padding: 12px 28px;
       border: none;
       border-radius: 30px;
       background: #fff;
       color: #333;
-      font-size: 1rem;
       cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .hero button:hover {
-      transform: scale(1.05);
     }
 
     .section {
@@ -80,77 +63,113 @@
       text-align: center;
     }
 
-    .section h2 {
-      margin-bottom: 15px;
-    }
-
     footer {
       text-align: center;
       padding: 20px;
       background: rgba(0,0,0,0.3);
     }
 
-    .fade {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: 0.8s ease;
+    /* Article page */
+    .article {
+      display: none;
+      background: #f5f7fa;
+      color: #333;
+      min-height: 100vh;
+      padding: 40px 20px;
     }
 
-    .fade.show {
-      opacity: 1;
-      transform: translateY(0);
+    .article-container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .back-btn {
+      margin-top: 20px;
+      display: inline-block;
+      cursor: pointer;
+      color: #667eea;
     }
   </style>
 </head>
 
 <body>
 
-  <header class="navbar">
-    <div class="logo">Konstantin Noll</div>
-    <nav>
-      <a href="#">Home</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
+  <!-- HOME PAGE -->
+  <div id="homePage">
+    <header class="navbar">
+      <div class="logo">Konstantin Noll</div>
+      <nav>
+        <a href="#">Home</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
 
-  <main class="hero">
-    <h1>Sleep Awareness</h1>
-    <p>Because better sleep means a better you.</p>
-    <button onclick="redirectUser()">Get Started</button>
-  </main>
+    <main class="hero">
+      <h1>Sleep Awareness</h1>
+      <p>Because better sleep means a better you.</p>
+      <button onclick="showArticle()">Get Started</button>
+    </main>
 
-  <section id="about" class="section fade">
-    <h2>About</h2>
-    <p>This website is dedicated to raising awareness about the importance of healthy sleep and helping people build better sleep habits.</p>
-  </section>
+    <section id="about" class="section">
+      <h2>About</h2>
+      <p>This website is dedicated to raising awareness about the importance of healthy sleep.</p>
+    </section>
 
-  <section id="contact" class="section fade">
-    <h2>Contact</h2>
-    <p>konstantin.noll@icloud.com</p>
-  </section>
+    <section id="contact" class="section">
+      <h2>Contact</h2>
+      <p>konstantin.noll@icloud.com</p>
+    </section>
 
-  <footer>
-    <p>© 2026 Konstantin Noll</p>
-  </footer>
+    <footer>
+      <p>© 2026 Konstantin Noll</p>
+    </footer>
+  </div>
+
+  <!-- ARTICLE PAGE -->
+  <div id="articlePage" class="article">
+    <div class="article-container">
+      <h1>Why Sleep Matters</h1>
+
+      <p>
+        Sleep is essential for maintaining both physical and mental health. During sleep,
+        your body repairs itself, strengthens your immune system, and processes information
+        from the day.
+      </p>
+
+      <p>
+        Not getting enough sleep can lead to poor concentration, mood swings, and long-term
+        health risks such as heart disease and weakened immunity.
+      </p>
+
+      <p>
+        Most people need 7–9 hours of sleep per night. Creating a regular sleep routine,
+        avoiding screens before bed, and maintaining a calm environment can greatly improve
+        sleep quality.
+      </p>
+
+      <p>
+        Better sleep leads to better focus, better health, and a better life.
+      </p>
+
+      <span class="back-btn" onclick="goBack()">← Back to Home</span>
+    </div>
+  </div>
 
   <script>
-    function redirectUser() {
-      // 🔧 Replace this later with your actual redirect
-      window.location.href = "https://example.com";
+    function showArticle() {
+      document.getElementById("homePage").style.display = "none";
+      document.getElementById("articlePage").style.display = "block";
     }
 
-    const faders = document.querySelectorAll(".fade");
-
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("show");
-        }
-      });
-    });
-
-    faders.forEach(el => observer.observe(el));
+    function goBack() {
+      document.getElementById("articlePage").style.display = "none";
+      document.getElementById("homePage").style.display = "block";
+    }
   </script>
 
 </body>
