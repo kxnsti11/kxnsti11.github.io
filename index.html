@@ -3,530 +3,1021 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sleep Awareness</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-
+  <title>Sleep Awareness — Konstantin Noll</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --purple-dark: #3a1f6e;
-      --purple-mid: #667eea;
-      --purple-light: #764ba2;
-      --cream: #f8f5f0;
-      --text-dark: #1a1a2e;
-      --text-mid: #4a4a6a;
+      --ink: #0d0d12;
+      --ink-soft: #1e1e2e;
+      --ink-muted: #6b6b8a;
+      --fog: #f4f3f0;
+      --fog-deep: #eceae5;
+      --gold: #c8a96e;
+      --gold-pale: #e8d9b8;
+      --blue-night: #1a1a3e;
+      --blue-deep: #0f0f28;
+      --star: rgba(200,169,110,0.7);
+      --white: #fdfcfa;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: "DM Sans", sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #fff;
-      line-height: 1.6;
+      font-family: 'Syne', sans-serif;
+      background: var(--ink);
+      color: var(--white);
+      overflow-x: hidden;
     }
 
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ── NAVBAR ── */
     .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 40px;
-      background: rgba(0,0,0,0.2);
-      backdrop-filter: blur(10px);
-      position: sticky;
-      top: 0;
+      position: fixed;
+      top: 0; left: 0; right: 0;
       z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 48px;
+      transition: background 0.5s, padding 0.4s, backdrop-filter 0.5s;
+    }
+
+    .navbar.scrolled {
+      background: rgba(13,13,18,0.88);
+      backdrop-filter: blur(20px);
+      padding: 16px 48px;
+      border-bottom: 1px solid rgba(200,169,110,0.1);
     }
 
     .logo {
-      font-weight: bold;
-      font-family: "Playfair Display", serif;
-      font-size: 1.1rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      color: var(--white);
+      opacity: 0.9;
     }
 
-    .navbar nav a {
-      color: #fff;
-      margin-left: 24px;
+    .logo span { color: var(--gold); }
+
+    nav { display: flex; gap: 36px; }
+
+    nav a {
+      color: rgba(253,252,250,0.55);
       text-decoration: none;
-      font-size: 0.9rem;
-      opacity: 0.85;
-      transition: opacity 0.2s;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.25s;
+      cursor: pointer;
     }
 
-    .navbar nav a:hover { opacity: 1; }
+    nav a:hover { color: var(--gold); }
+
+    /* ── HERO ── */
+    #homePage { position: relative; }
 
     .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      padding: 140px 20px 120px;
+      padding: 120px 20px 80px;
       position: relative;
       overflow: hidden;
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, #1e1535 0%, #0d0d12 65%);
     }
 
-    .hero::before {
-      content: '';
+    /* Stars */
+    .stars {
       position: absolute;
-      width: 600px; height: 600px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.04);
-      top: -100px; left: -100px;
+      inset: 0;
       pointer-events: none;
     }
 
-    .hero::after {
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      animation: twinkle var(--dur) ease-in-out infinite alternate;
+      opacity: 0;
+    }
+
+    @keyframes twinkle {
+      0%   { opacity: 0.1; transform: scale(1); }
+      100% { opacity: 0.8; transform: scale(1.3); }
+    }
+
+    /* Moon */
+    .moon {
+      position: absolute;
+      top: 80px; right: 12%;
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, #f5e6c8, #c8a96e 60%, #a07840);
+      box-shadow: 0 0 60px rgba(200,169,110,0.35), 0 0 120px rgba(200,169,110,0.12), inset -20px -10px 30px rgba(0,0,0,0.4);
+      animation: moonFloat 8s ease-in-out infinite;
+    }
+
+    .moon::after {
       content: '';
       position: absolute;
-      width: 400px; height: 400px;
+      top: 15px; left: 20px;
+      width: 22px; height: 22px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.04);
-      bottom: -80px; right: -60px;
-      pointer-events: none;
+      background: rgba(160,120,64,0.5);
+      box-shadow: 30px 18px 0 8px rgba(160,120,64,0.3), 15px 45px 0 4px rgba(160,120,64,0.25);
+    }
+
+    @keyframes moonFloat {
+      0%,100% { transform: translateY(0px) rotate(-5deg); }
+      50%      { transform: translateY(-18px) rotate(2deg); }
+    }
+
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+      animation: fadeUp 1s ease both;
+      animation-delay: 0.2s;
     }
 
     .hero h1 {
-      font-family: "Playfair Display", serif;
-      font-size: 3.8rem;
-      margin-bottom: 16px;
-      letter-spacing: -0.5px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.8rem, 9vw, 8rem);
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      color: var(--white);
+      animation: fadeUp 1s ease both;
+      animation-delay: 0.35s;
     }
 
-    .hero p {
-      font-size: 1.1rem;
-      opacity: 0.8;
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold-pale);
     }
 
-    .hero button {
-      margin-top: 44px;
-      padding: 14px 36px;
-      border: none;
-      border-radius: 50px;
-      background: #fff;
-      color: var(--purple-dark);
-      font-family: "DM Sans", sans-serif;
+    .hero-sub {
+      margin-top: 28px;
       font-size: 0.95rem;
-      font-weight: 500;
+      color: rgba(253,252,250,0.45);
+      max-width: 400px;
+      line-height: 1.8;
+      font-weight: 400;
+      animation: fadeUp 1s ease both;
+      animation-delay: 0.5s;
+    }
+
+    .cta-wrap {
+      margin-top: 56px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      animation: fadeUp 1s ease both;
+      animation-delay: 0.65s;
+    }
+
+    .btn-primary {
+      padding: 15px 40px;
+      border-radius: 2px;
+      background: var(--gold);
+      color: var(--blue-deep);
+      border: none;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+      box-shadow: 0 4px 30px rgba(200,169,110,0.3);
     }
 
-    .hero button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(200,169,110,0.45);
+      background: var(--gold-pale);
     }
 
-    .section {
-      background: #fff;
-      color: var(--text-dark);
-      padding: 70px 20px;
+    .btn-ghost {
+      padding: 15px 32px;
+      border-radius: 2px;
+      background: transparent;
+      color: rgba(253,252,250,0.55);
+      border: 1px solid rgba(253,252,250,0.15);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.25s, border-color 0.25s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-ghost:hover {
+      color: var(--white);
+      border-color: rgba(253,252,250,0.4);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.35;
+      animation: fadeIn 1.5s ease both;
+      animation-delay: 1.2s;
+    }
+
+    .scroll-hint span {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--white), transparent);
+      animation: scrollDrop 1.8s ease-in-out infinite;
+    }
+
+    @keyframes scrollDrop {
+      0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+      50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+      100% { transform: scaleY(1); transform-origin: bottom; opacity: 0; }
+    }
+
+    /* ── STATS BAND ── */
+    .stats-band {
+      background: var(--fog);
+      color: var(--ink);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--fog-deep);
+    }
+
+    .stat-item {
+      padding: 52px 32px;
+      border-right: 1px solid var(--fog-deep);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .stat-item:last-child { border-right: none; }
+    .stat-item.visible { opacity: 1; transform: translateY(0); }
+    .stat-item:nth-child(2) { transition-delay: 0.15s; }
+    .stat-item:nth-child(3) { transition-delay: 0.3s; }
+
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.6rem;
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1;
+      display: block;
+    }
+
+    .stat-num span { color: var(--gold); }
+
+    .stat-desc {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+      max-width: 160px;
+    }
+
+    /* ── ABOUT SECTION ── */
+    .about-section {
+      background: var(--fog);
+      color: var(--ink);
+      padding: 120px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .about-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 24px;
+    }
+
+    .about-section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--ink);
+    }
+
+    .about-section h2 em { font-style: italic; }
+
+    .about-body {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .about-body p {
+      font-size: 0.92rem;
+      color: var(--ink-muted);
+      line-height: 1.9;
+    }
+
+    .about-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      margin: 4px 0;
+    }
+
+    /* ── CONTACT SECTION ── */
+    .contact-section {
+      background: var(--ink);
+      padding: 100px 48px;
       text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
     }
 
-    .section h2 {
-      font-family: "Playfair Display", serif;
-      font-size: 2rem;
-      margin-bottom: 12px;
+    .contact-section .label {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
     }
 
-    .section p {
-      color: var(--text-mid);
-      max-width: 500px;
-      margin: 0 auto;
+    .contact-section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.6rem;
+      font-weight: 300;
+      margin-bottom: 32px;
     }
 
+    .contact-section a {
+      color: var(--gold-pale);
+      text-decoration: none;
+      font-size: 1.1rem;
+      border-bottom: 1px solid rgba(200,169,110,0.3);
+      padding-bottom: 2px;
+      transition: border-color 0.25s, color 0.25s;
+    }
+
+    .contact-section a:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+
+    /* ── FOOTER ── */
     footer {
-      text-align: center;
-      padding: 20px;
-      background: rgba(0,0,0,0.3);
-      font-size: 0.85rem;
-      opacity: 0.7;
+      background: var(--blue-deep);
+      padding: 24px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(200,169,110,0.08);
     }
 
-    .article-page {
-      display: none;
-      background: var(--cream);
-      /*color: var(--text-dark);*/
-      min-height: 100vh;
+    footer span {
+      font-size: 0.75rem;
+      color: rgba(253,252,250,0.25);
+      letter-spacing: 0.06em;
     }
 
+    /* ── ARTICLE PAGE ── */
+    #articlePage { display: none; }
+
+    .article-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(13,13,18,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(200,169,110,0.1);
+    }
+
+    .article-nav .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+    }
+
+    .article-nav .logo span { color: var(--gold); }
+
+    .back-link {
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(253,252,250,0.45);
+      cursor: pointer;
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.25s;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .back-link:hover { color: var(--gold); }
+
+    .back-link::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 1px;
+      background: currentColor;
+      transition: width 0.3s;
+    }
+
+    .back-link:hover::before { width: 30px; }
+
+    /* Article hero */
     .article-hero {
-      background: linear-gradient(135deg, #3a1f6e 0%, #667eea 60%, #764ba2 100%);
-      color: #fff;
-      padding: 60px 40px 90px;
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 140px 48px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(ellipse 80% 70% at 50% 30%, #1a1040 0%, #0d0d12 70%);
+    }
+
+    .article-hero .stars { position: absolute; inset: 0; pointer-events: none; }
+
+    .article-tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(200,169,110,0.3);
+      padding: 5px 18px;
+      border-radius: 1px;
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease both 0.2s;
+    }
+
+    .article-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 5vw, 5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      max-width: 800px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease both 0.35s;
+    }
+
+    .article-hero h1 em { font-style: italic; color: var(--gold-pale); }
+
+    .article-subtitle {
+      margin-top: 20px;
+      font-size: 0.95rem;
+      color: rgba(253,252,250,0.45);
+      max-width: 480px;
+      line-height: 1.8;
+      opacity: 0;
+      animation: fadeUp 0.8s ease both 0.5s;
+    }
+
+    /* Article body */
+    .article-content {
+      background: var(--white);
+      color: var(--ink);
+      max-width: 760px;
+      margin: -60px auto 0;
+      border-radius: 4px 4px 0 0;
+      padding: 72px 80px 80px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 -20px 80px rgba(0,0,0,0.4);
+    }
+
+    .article-lead {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.55rem;
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      border-left: 2px solid var(--gold);
+      padding-left: 28px;
+      margin-bottom: 48px;
+    }
+
+    .article-content h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--ink);
+      margin: 56px 0 18px;
+      line-height: 1.2;
+    }
+
+    .article-content p {
+      font-size: 0.97rem;
+      color: var(--ink-muted);
+      line-height: 2;
+      margin-bottom: 22px;
+    }
+
+    /* Stats row inside article */
+    .a-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin: 44px 0;
+      background: var(--fog-deep);
+    }
+
+    .a-stat {
+      background: var(--fog);
+      padding: 32px 20px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .a-stat.visible { opacity: 1; transform: translateY(0); }
+    .a-stat:nth-child(2) { transition-delay: 0.12s; }
+    .a-stat:nth-child(3) { transition-delay: 0.24s; }
+
+    .a-stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.6rem;
+      font-weight: 300;
+      color: var(--ink);
+      display: block;
+    }
+
+    .a-stat-lbl {
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    /* Pull quote */
+    .pull-quote {
+      margin: 52px 0;
+      background: var(--blue-night);
+      color: var(--white);
+      padding: 48px 52px;
+      border-radius: 2px;
       text-align: center;
       position: relative;
       overflow: hidden;
     }
 
-    .article-hero::before {
-      content: '☽';
+    .pull-quote::before {
+      content: '"';
       position: absolute;
-      font-size: 18rem;
-      opacity: 0.04;
-      top: -40px; right: -20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16rem;
+      color: rgba(200,169,110,0.06);
+      top: -40px; left: 20px;
       line-height: 1;
       pointer-events: none;
     }
 
-    .article-hero .tag {
-      display: inline-block;
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 50px;
-      padding: 4px 16px;
-      font-size: 0.78rem;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-
-    .article-hero h1 {
-      font-family: "Playfair Display", serif;
-      font-size: 3rem;
-      max-width: 700px;
-      margin: 0 auto 16px;
-      line-height: 1.2;
-    }
-
-    .article-hero .subtitle {
-      opacity: 0.75;
-      font-size: 1.05rem;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    .article-body {
-      max-width: 760px;
-      margin: -44px auto 0;
-      background: #fff;
-      border-radius: 20px 20px 0 0;
-      padding: 52px 56px 64px;
-      box-shadow: 0 -8px 40px rgba(0,0,0,0.06);
-    }
-
-    .article-body .lead {
-      font-size: 1.2rem;
-      color: var(--text-mid);
-      border-left: 3px solid var(--purple-mid);
-      padding-left: 20px;
-      margin-top: 20px;
-      margin-bottom: 20px;
+    .pull-quote p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem;
       font-style: italic;
-      line-height: 1.7;
+      font-weight: 300;
+      line-height: 1.5;
+      color: var(--white);
+      position: relative;
     }
 
-    .article-body h2 {
-      font-family: "Playfair Display", serif;
-      font-size: 1.6rem;
-      color: var(--text-dark);
-      margin: 44px 0 14px;
-    }
-
-    .article-body p {
-      color: var(--text-mid);
-      font-size: 1.02rem;
-      line-height: 1.85;
-      margin-bottom: 20px;
-    }
-
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin: 36px 0;
-    }
-
-    .stat-card {
-      background: linear-gradient(135deg, #667eea12, #764ba212);
-      border: 1px solid #667eea20;
-      border-radius: 14px;
-      padding: 24px 16px;
-      text-align: center;
-    }
-
-    .stat-card .num {
-      font-family: "Playfair Display", serif;
-      font-size: 2.4rem;
-      color: var(--purple-mid);
-      font-weight: 700;
+    .pull-quote cite {
       display: block;
+      margin-top: 20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-style: normal;
     }
 
-    .stat-card .label {
-      font-size: 0.82rem;
-      color: var(--text-mid);
-      margin-top: 4px;
+    /* Tips list */
+    .tips-list { list-style: none; margin: 28px 0; }
+
+    .tip-item {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 20px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--fog-deep);
+      align-items: start;
+      opacity: 0;
+      transform: translateX(-12px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .tip-item.visible { opacity: 1; transform: translateX(0); }
+    .tip-item:last-child { border-bottom: none; }
+
+    .tip-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      font-weight: 300;
       line-height: 1.4;
     }
 
-    .tips-list {
-      list-style: none;
-      margin: 20px 0 30px;
+    .tip-body strong {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+      letter-spacing: 0.02em;
     }
 
-    .tips-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 16px 0;
-      border-bottom: 1px solid #f0edf8;
-      color: var(--text-mid);
-      font-size: 1rem;
-      line-height: 1.6;
-    }
-
-    .tips-list li:last-child { border-bottom: none; }
-
-    .tip-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .pull-quote {
-      background: linear-gradient(135deg, #3a1f6e, #667eea);
-      color: #fff;
-      border-radius: 16px;
-      padding: 36px 40px;
-      margin: 40px 0;
-      text-align: center;
-    }
-
-    .pull-quote p {
-      font-family: "Playfair Display", serif;
-      font-style: italic;
-      font-size: 1.35rem;
-      color: #fff;
-      line-height: 1.6;
+    .tip-body p {
+      font-size: 0.88rem;
+      color: var(--ink-muted);
+      line-height: 1.75;
       margin: 0;
     }
 
-    .pull-quote span {
-      display: block;
-      margin-top: 14px;
-      font-size: 0.8rem;
-      opacity: 0.6;
-      font-family: "DM Sans", sans-serif;
-      font-style: normal;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    .back-btn {
+    .article-back-btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      margin-top: 48px;
-      padding: 13px 30px;
-      border-radius: 50px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #fff;
-      font-family: "DM Sans", sans-serif;
-      font-size: 0.9rem;
+      gap: 12px;
+      margin-top: 56px;
+      padding: 15px 40px;
+      background: var(--ink);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 2px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
       font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       cursor: pointer;
-      border: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 6px 20px rgba(102,126,234,0.35);
+      transition: background 0.25s, border-color 0.25s, transform 0.25s;
     }
 
-    .back-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(102,126,234,0.45);
+    .article-back-btn:hover {
+      background: var(--blue-night);
+      border-color: rgba(200,169,110,0.3);
+      transform: translateX(-4px);
     }
 
-    .article-footer {
+    .article-back-btn::before {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: currentColor;
+      transition: width 0.3s;
+    }
+
+    .article-back-btn:hover::before { width: 30px; }
+
+    /* Article footer */
+    .article-footer-wrap {
+      background: var(--ink);
+      padding: 80px 48px;
       text-align: center;
-      padding: 24px;
-      background: rgba(0,0,0,0.3);
-      color: #fff;
-      font-size: 0.85rem;
-      opacity: 0.7;
     }
 
-    @media (max-width: 640px) {
-      .article-body { padding: 36px 24px 48px; }
-      .article-hero h1 { font-size: 2rem; }
-      .stats-row { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 2.6rem; }
-      .navbar { padding: 16px 20px; }
+    /* ── PAGE TRANSITIONS ── */
+    .page-enter {
+      animation: pageIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 0.35; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .navbar, .article-nav { padding: 20px 24px; }
+      nav { display: none; }
+      .about-section { grid-template-columns: 1fr; padding: 80px 24px; gap: 40px; }
+      .stats-band { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--fog-deep); }
+      .stat-item:last-child { border-bottom: none; }
+      .article-content { padding: 44px 28px 60px; margin-top: -30px; }
+      .article-hero { padding: 120px 24px 60px; }
+      .a-stats { grid-template-columns: 1fr; gap: 2px; }
+      .pull-quote { padding: 32px 28px; }
+      footer { flex-direction: column; gap: 8px; text-align: center; }
+      .contact-section { padding: 80px 24px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- HOME PAGE -->
-  <div id="homePage">
-    <header class="navbar">
-      <div class="logo">Konstantin Noll</div>
-      <nav>
-        <a href="#">Home</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
-      </nav>
-    </header>
+<!-- ===================== HOME PAGE ===================== -->
+<div id="homePage">
 
-    <main class="hero">
-      <h1>Sleep Awareness</h1>
-      <p>Because better sleep means a better you.</p>
-      <button onclick="showArticle()">Get Started</button>
-    </main>
+  <header class="navbar" id="mainNav">
+    <div class="logo">Konstantin <span>Noll</span></div>
+    <nav>
+      <a href="#" onclick="scrollToSection('homeHero'); return false;">Home</a>
+      <a href="#" onclick="scrollToSection('aboutSection'); return false;">About</a>
+      <a href="#" onclick="scrollToSection('contactSection'); return false;">Contact</a>
+    </nav>
+  </header>
 
-    <section id="about" class="section">
-      <h2>About</h2>
-      <p>This website is dedicated to raising awareness about the importance of healthy sleep.</p>
-    </section>
+  <!-- HERO -->
+  <section class="hero" id="homeHero">
+    <div class="stars" id="homeStars"></div>
+    <div class="moon"></div>
 
-    <section id="contact" class="section">
-      <h2>Contact</h2>
-      <p>konstantin.noll@icloud.com</p>
-    </section>
+    <p class="hero-eyebrow">Sleep Awareness</p>
+    <h1>Rest is not<br><em>a luxury.</em></h1>
+    <p class="hero-sub">Discover the science of sleep and why what happens at night defines everything about your day.</p>
 
-    <footer>
-      <p>© 2026 Konstantin Noll</p>
+    <div class="cta-wrap">
+      <button class="btn-primary" onclick="showArticle()">Read the Guide</button>
+      <a class="btn-ghost" href="#" onclick="scrollToSection('aboutSection'); return false;">About</a>
+    </div>
+
+    <div class="scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- STATS BAND -->
+  <div class="stats-band" id="statsBand">
+    <div class="stat-item">
+      <span class="stat-num"><span>1</span> in 3</span>
+      <p class="stat-desc">Adults regularly fall short of recommended sleep</p>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">7–<span>9</span>h</span>
+      <p class="stat-desc">Nightly sleep recommended for healthy adults</p>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num"><span>26</span>%</span>
+      <p class="stat-desc">Higher risk of depression linked to chronic sleep loss</p>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="about-section" id="aboutSection">
+    <div>
+      <p class="about-label">About this project</p>
+      <h2>Why sleep <em>matters</em> more than you think</h2>
+    </div>
+    <div class="about-body">
+      <div class="about-divider"></div>
+      <p>This website is dedicated to raising awareness about the importance of healthy, restorative sleep — and what we lose when we don't prioritise it.</p>
+      <p>Built on current sleep science, it offers practical, evidence-based insights for anyone looking to understand and improve their relationship with rest.</p>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-section" id="contactSection">
+    <p class="label">Get in touch</p>
+    <h2>Questions or <em>thoughts?</em></h2>
+    <a href="mailto:konstantin.noll@icloud.com">konstantin.noll@icloud.com</a>
+  </section>
+
+  <footer>
+    <span>© 2026 Konstantin Noll</span>
+    <span>Sleep Awareness</span>
+  </footer>
+
+</div>
+
+<!-- ===================== ARTICLE PAGE ===================== -->
+<div id="articlePage">
+
+  <header class="article-nav">
+    <div class="logo">Konstantin <span>Noll</span></div>
+    <button class="back-link" onclick="goBack()">Home</button>
+  </header>
+
+  <div class="article-hero">
+    <div class="stars" id="articleStars"></div>
+    <div class="article-tag">Sleep Science</div>
+    <h1>Why sleep is the <em>foundation</em> of a healthy life</h1>
+    <p class="article-subtitle">A deep dive into what happens when you sleep — and what you risk when you don't.</p>
+  </div>
+
+  <div class="article-content page-enter">
+
+    <p class="article-lead">
+      Sleep isn't a luxury or a sign of laziness. It is one of the most powerful biological processes your body undergoes — and most of us are not getting nearly enough of it.
+    </p>
+
+    <div class="a-stats">
+      <div class="a-stat">
+        <span class="a-stat-num">1 in 3</span>
+        <div class="a-stat-lbl">Adults don't get enough sleep regularly</div>
+      </div>
+      <div class="a-stat">
+        <span class="a-stat-num">7–9h</span>
+        <div class="a-stat-lbl">Recommended nightly sleep for adults</div>
+      </div>
+      <div class="a-stat">
+        <span class="a-stat-num">26%</span>
+        <div class="a-stat-lbl">Higher depression risk with poor sleep</div>
+      </div>
+    </div>
+
+    <h2>What actually happens while you sleep?</h2>
+    <p>Sleep is far from passive. While you rest, your brain cycles through several stages — light sleep, deep sleep, and REM sleep. Each plays a critical role. During deep sleep, your body releases growth hormones that repair muscles and tissues, your immune system strengthens, your cells regenerate, and your cardiovascular system gets a much-needed break.</p>
+    <p>During REM sleep, your brain becomes surprisingly active. This is when most dreaming occurs — and when your brain consolidates memories, processes emotions, and makes creative connections between ideas. A single night of poor sleep can noticeably reduce your ability to learn, remember, and regulate your mood the following day.</p>
+
+    <div class="pull-quote">
+      <p>"Sleep is the golden chain that ties health and our bodies together."</p>
+      <cite>— Thomas Dekker</cite>
+    </div>
+
+    <h2>The real cost of sleep deprivation</h2>
+    <p>We live in a culture that often glorifies busyness and treats sleep as optional. But science tells a very different story. Chronic sleep deprivation — consistently fewer than 6 hours per night — is linked to dramatically increased risk of type 2 diabetes, obesity, cardiovascular disease, and certain cancers.</p>
+    <p>Short-term effects are felt almost immediately: impaired judgment, reduced reaction time, difficulty concentrating, and heightened emotional reactivity. Studies show that 17 hours awake impairs cognition to the same degree as a blood alcohol level of 0.05%. After 24 hours without sleep, that rises to the equivalent of 0.10% — above the legal driving limit in most countries.</p>
+    <p>Beyond the physical, poor sleep is one of the most significant risk factors for mental health disorders. Anxiety, depression, and ADHD are all closely linked to disrupted sleep patterns — and it becomes a cycle: poor mental health disrupts sleep, and poor sleep worsens mental health.</p>
+
+    <h2>How to actually improve your sleep</h2>
+    <p>Sleep quality is highly responsive to simple, consistent changes. Here are the most evidence-backed strategies:</p>
+
+    <ul class="tips-list" id="tipsList">
+      <li class="tip-item">
+        <div class="tip-num">01</div>
+        <div class="tip-body">
+          <strong>Keep a consistent schedule</strong>
+          <p>Go to bed and wake up at the same time every day — even on weekends. Your body's internal clock thrives on regularity.</p>
+        </div>
+      </li>
+      <li class="tip-item">
+        <div class="tip-num">02</div>
+        <div class="tip-body">
+          <strong>Limit screens before bed</strong>
+          <p>Blue light from phones and laptops suppresses melatonin production. Try switching off at least 45–60 minutes before sleep.</p>
+        </div>
+      </li>
+      <li class="tip-item">
+        <div class="tip-num">03</div>
+        <div class="tip-body">
+          <strong>Cool your room down</strong>
+          <p>Your core body temperature needs to drop slightly to initiate sleep. A temperature of 16–19°C (60–67°F) is ideal for most people.</p>
+        </div>
+      </li>
+      <li class="tip-item">
+        <div class="tip-num">04</div>
+        <div class="tip-body">
+          <strong>Watch your caffeine intake</strong>
+          <p>Caffeine has a half-life of around 5–6 hours. A coffee at 3 PM means half of it is still in your system at 9 PM. Cut off by early afternoon.</p>
+        </div>
+      </li>
+      <li class="tip-item">
+        <div class="tip-num">05</div>
+        <div class="tip-body">
+          <strong>Wind down intentionally</strong>
+          <p>Create a pre-sleep ritual: a warm shower, light reading, or gentle stretching. This signals your nervous system that it's time to rest.</p>
+        </div>
+      </li>
+      <li class="tip-item">
+        <div class="tip-num">06</div>
+        <div class="tip-body">
+          <strong>Make your room as dark as possible</strong>
+          <p>Even small amounts of light can interfere with melatonin. Blackout curtains or a sleep mask can make a significant difference.</p>
+        </div>
+      </li>
+    </ul>
+
+    <h2>Sleep and performance</h2>
+    <p>Whether you're a student, athlete, or working professional, sleep is your most powerful performance enhancer. Research from Stanford University found that athletes who extended sleep to 10 hours per night showed significant improvements in speed, reaction time, and accuracy — findings that hold across virtually every domain.</p>
+    <p>For students especially, sleep plays a direct role in academic results. Memory consolidation — the process by which your brain converts short-term learning into long-term knowledge — happens almost entirely during sleep. Pulling an all-nighter before an exam is, ironically, one of the worst strategies you can use.</p>
+
+    <h2>A final word</h2>
+    <p>Sleep is not something to negotiate with or sacrifice for productivity. It is the very thing that makes productivity, creativity, health, and happiness possible. Prioritising your sleep is one of the highest-return investments you can make in yourself — and it costs nothing but consistency.</p>
+    <p>Start tonight. Set a bedtime. Put the phone down. Give your body the rest it deserves.</p>
+
+    <button class="article-back-btn" onclick="goBack()">Back to Home</button>
+  </div>
+
+  <div class="article-footer-wrap">
+    <footer style="background: transparent; border-top: 1px solid rgba(200,169,110,0.08); padding: 24px 0 0;">
+      <span>© 2026 Konstantin Noll</span>
+      <span>Sleep Awareness</span>
     </footer>
   </div>
 
-  <!-- ARTICLE PAGE -->
-  <div id="articlePage" class="article-page">
+</div>
 
-    <header class="navbar" style="background: rgba(58,31,110,0.85);">
-      <div class="logo">Konstantin Noll</div>
-      <nav>
-        <a href="#" onclick="goBack(); return false;">← Home</a>
-      </nav>
-    </header>
-
-    <div class="article-hero">
-      <div class="tag">Sleep Science</div>
-      <h1>Why Sleep is the Foundation of a Healthy Life</h1>
-      <p class="subtitle">A deep dive into what happens when you sleep — and what you risk when you don't.</p>
-    </div>
-
-    <div class="article-body">
-
-      <p class="lead">
-        Sleep isn't a luxury or a sign of laziness. It is one of the most powerful biological processes your body undergoes — and most of us are not getting nearly enough of it.
-      </p>
-
-      <div class="stats-row">
-        <div class="stat-card">
-          <span class="num">1 in 3</span>
-          <div class="label">Adults don't get enough sleep regularly</div>
-        </div>
-        <div class="stat-card">
-          <span class="num">7–9h</span>
-          <div class="label">Recommended nightly sleep for adults</div>
-        </div>
-        <div class="stat-card">
-          <span class="num">26%</span>
-          <div class="label">Higher risk of depression with poor sleep</div>
-        </div>
-      </div>
-
-      <h2>What Actually Happens While You Sleep?</h2>
-      <p>
-        Sleep is far from passive. While you rest, your brain cycles through several stages — light sleep, deep sleep, and REM (Rapid Eye Movement) sleep. Each stage plays a critical role. During deep sleep, your body releases growth hormones that repair muscles and tissues, your immune system strengthens, your cells regenerate, and your heart rate slows, giving your cardiovascular system a much-needed break.
-      </p>
-      <p>
-        During REM sleep, your brain becomes surprisingly active. This is when most dreaming occurs, and it is also when your brain consolidates memories, processes emotions, and makes creative connections between ideas. A single night of poor sleep can noticeably reduce your ability to learn, remember, and regulate your mood the following day.
-      </p>
-
-      <div class="pull-quote">
-        <p>"Sleep is the golden chain that ties health and our bodies together."</p>
-        <span>— Thomas Dekker</span>
-      </div>
-
-      <h2>The Real Cost of Sleep Deprivation</h2>
-      <p>
-        We live in a culture that often glorifies busyness and treats sleep as optional. But science tells a very different story. Chronic sleep deprivation — defined as consistently getting fewer than 6 hours per night — is linked to a dramatically increased risk of serious conditions including type 2 diabetes, obesity, cardiovascular disease, and even certain cancers.
-      </p>
-      <p>
-        Short-term effects are felt almost immediately: impaired judgment, reduced reaction time, difficulty concentrating, and heightened emotional reactivity. Studies have shown that being awake for 17 hours straight impairs your cognition to the same degree as a blood alcohol level of 0.05%. After 24 hours without sleep, that rises to the equivalent of 0.10% — above the legal driving limit in most countries.
-      </p>
-      <p>
-        Beyond the physical, poor sleep is one of the most significant risk factors for mental health disorders. Anxiety, depression, and ADHD are all closely linked to disrupted sleep patterns. It becomes a cycle: poor mental health disrupts sleep, and poor sleep worsens mental health.
-      </p>
-
-      <h2>How to Actually Improve Your Sleep</h2>
-      <p>
-        The good news is that sleep quality is highly responsive to simple, consistent changes in your habits and environment. Here are the most evidence-backed strategies:
-      </p>
-
-      <ul class="tips-list">
-        <li>
-          <div class="tip-icon">🌙</div>
-          <div><strong>Keep a consistent schedule.</strong> Go to bed and wake up at the same time every day — even on weekends. Your body's internal clock thrives on regularity.</div>
-        </li>
-        <li>
-          <div class="tip-icon">📵</div>
-          <div><strong>Limit screens before bed.</strong> The blue light emitted by phones, tablets, and laptops suppresses melatonin production. Try switching off at least 45–60 minutes before sleep.</div>
-        </li>
-        <li>
-          <div class="tip-icon">🌡️</div>
-          <div><strong>Cool your room down.</strong> Your core body temperature needs to drop slightly to initiate sleep. A bedroom temperature between 16–19°C (60–67°F) is ideal for most people.</div>
-        </li>
-        <li>
-          <div class="tip-icon">☕</div>
-          <div><strong>Watch your caffeine intake.</strong> Caffeine has a half-life of around 5–6 hours. A coffee at 3 PM means half of it is still in your system at 9 PM. Try to cut off caffeine by early afternoon.</div>
-        </li>
-        <li>
-          <div class="tip-icon">🧘</div>
-          <div><strong>Wind down intentionally.</strong> Create a pre-sleep ritual: a warm shower, light reading, or gentle stretching. This signals to your nervous system that it is time to shift into rest mode.</div>
-        </li>
-        <li>
-          <div class="tip-icon">🌑</div>
-          <div><strong>Make your room as dark as possible.</strong> Even small amounts of light can interfere with melatonin. Blackout curtains or a sleep mask can make a significant difference.</div>
-        </li>
-      </ul>
-
-      <h2>Sleep and Performance</h2>
-      <p>
-        Whether you are a student, an athlete, or a working professional, sleep is your most powerful performance enhancer. Research from Stanford University found that athletes who extended their sleep to 10 hours per night showed significant improvements in speed, reaction time, and accuracy. Similar findings exist across virtually every domain of performance.
-      </p>
-      <p>
-        For students especially, sleep plays a direct role in academic results. Memory consolidation — the process by which your brain converts short-term learning into long-term knowledge — happens almost entirely during sleep. Pulling an all-nighter before an exam is, ironically, one of the worst strategies you can use.
-      </p>
-
-      <h2>A Final Word</h2>
-      <p>
-        Sleep is not something to negotiate with or sacrifice for productivity. It is the very thing that makes productivity, creativity, health, and happiness possible. Prioritising your sleep is one of the highest-return investments you can make in yourself — and it costs nothing but consistency.
-      </p>
-      <p>
-        Start tonight. Set a bedtime. Put the phone down. Give your body the rest it deserves.
-      </p>
-
-      <button class="back-btn" onclick="goBack()">← Back to Home</button>
-    </div>
-
-    <footer class="article-footer">
-      <p>© 2026 Konstantin Noll</p>
-    </footer>
-  </div>
-
-  <script>
-    function showArticle() {
-      document.getElementById("homePage").style.display = "none";
-      document.getElementById("articlePage").style.display = "block";
-      window.scrollTo(0, 0);
+<script>
+  /* ── STARS ── */
+  function createStars(containerId, count) {
+    const c = document.getElementById(containerId);
+    if (!c) return;
+    c.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        top: ${Math.random() * 100}%;
+        left: ${Math.random() * 100}%;
+        --dur: ${2 + Math.random() * 4}s;
+        animation-delay: ${Math.random() * 4}s;
+      `;
+      c.appendChild(s);
     }
+  }
+  createStars('homeStars', 120);
 
-    function goBack() {
-      document.getElementById("articlePage").style.display = "none";
-      document.getElementById("homePage").style.display = "block";
-      window.scrollTo(0, 0);
-    }
-  </script>
+  /* ── NAVBAR SCROLL ── */
+  const mainNav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) mainNav.classList.add('scrolled');
+    else mainNav.classList.remove('scrolled');
+  });
+
+  /* ── INTERSECTION OBSERVER ── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.stat-item, .a-stat, .tip-item').forEach(el => io.observe(el));
+
+  /* ── NAVIGATION ── */
+  function scrollToSection(id) {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function showArticle() {
+    document.getElementById('homePage').style.display = 'none';
+    const ap = document.getElementById('articlePage');
+    ap.style.display = 'block';
+    window.scrollTo(0, 0);
+    createStars('articleStars', 100);
+    // Re-observe article elements
+    setTimeout(() => {
+      document.querySelectorAll('.a-stat, .tip-item').forEach(el => {
+        el.classList.remove('visible');
+        io.observe(el);
+      });
+    }, 100);
+  }
+
+  function goBack() {
+    document.getElementById('articlePage').style.display = 'none';
+    document.getElementById('homePage').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+</script>
 
 </body>
 </html>
