@@ -40,7 +40,6 @@
       opacity: 0.4;
     }
 
-    /* NAVBAR */
     .navbar {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -84,7 +83,6 @@
 
     nav a:hover { color: var(--blue-bright); }
 
-    /* HERO */
     #homePage { position: relative; }
 
     .hero {
@@ -94,7 +92,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 120px 20px 80px;
+      padding: 120px 20px 120px;
       position: relative;
       overflow: hidden;
       background: radial-gradient(ellipse 80% 60% at 50% 40%, #0d2a4a 0%, #07111f 65%);
@@ -181,6 +179,8 @@
       display: flex;
       gap: 16px;
       align-items: center;
+      position: relative;
+      z-index: 2;
       animation: fadeUp 1s ease both 0.65s;
     }
 
@@ -225,16 +225,20 @@
 
     .btn-ghost:hover { color: var(--white); border-color: rgba(244,249,255,0.4); }
 
+    /* Fixed scroll hint — pushed further down and z-index under buttons */
     .scroll-hint {
       position: absolute;
-      bottom: 36px; left: 50%;
+      bottom: 32px;
+      left: 50%;
       transform: translateX(-50%);
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
       opacity: 0.35;
-      animation: fadeIn 1.5s ease both 1.2s;
+      z-index: 1;
+      pointer-events: none;
+      animation: fadeIn 1.5s ease both 1.4s;
     }
 
     .scroll-hint span {
@@ -256,7 +260,6 @@
       100% { transform: scaleY(1); transform-origin: bottom; opacity: 0; }
     }
 
-    /* STATS BAND */
     .stats-band {
       background: var(--fog);
       color: var(--ink);
@@ -298,7 +301,6 @@
       max-width: 160px;
     }
 
-    /* ABOUT */
     .about-section {
       background: var(--fog);
       color: var(--ink);
@@ -341,7 +343,6 @@
       margin: 4px 0;
     }
 
-    /* CONTACT */
     .contact-section {
       background: var(--ink);
       padding: 100px 48px;
@@ -378,7 +379,6 @@
 
     .contact-section a:hover { color: var(--blue-bright); border-color: var(--blue-bright); }
 
-    /* FOOTER */
     footer {
       background: var(--blue-deep);
       padding: 24px 48px;
@@ -394,7 +394,6 @@
       letter-spacing: 0.06em;
     }
 
-    /* ARTICLE PAGE */
     #articlePage { display: none; }
 
     .article-nav {
